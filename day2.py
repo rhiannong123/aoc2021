@@ -2,6 +2,7 @@ import advent_of_code as aoc
 
 ## Read in input
 num = 2
+#lines = aoc.input_readlines(num,test=True) # read in test data
 lines = aoc.input_readlines(num)
 lines = [line.strip('\n') for line in lines]
 
