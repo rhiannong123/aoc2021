@@ -1,11 +1,11 @@
+import advent_of_code as aoc
+
 import pandas as pd
 
 
 ## PART 1
-
-with open('input/day1.txt','r') as f:
-    lines = f.readlines()
-
+num = 1
+lines = aoc.input_readlines(num)
 depths = [int(line) for line in lines]
 
 df = pd.DataFrame(depths, columns=['depths'])
