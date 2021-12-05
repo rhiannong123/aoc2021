@@ -7,10 +7,11 @@ num = 5
 #lines = aoc.input_readlines(num,test=True) # read in test data
 lines = aoc.input_readlines(num)
 lines = [line.strip('\n') for line in lines]
-verbose = True
+verbose = False
 
-## PART 1
 
+
+## Functions ##################################################
 def check_for_diag(line):
     ''' line = [x1,y1,x2,y2], each entry an int
     '''
@@ -25,12 +26,14 @@ def check_for_diag(line):
         ## CASE: vertical, horizontal, single point
         return False 
 
+
+    
 def check_for_diag_45(line):
     ''' line = [x1,y1,x2,y2], each entry an int
         45 deg angle would mean lines of y=x+constant, y=-x+constant
 
         returns: Either: 
-                  True, slope, b if 45 deg angle (y = mx + b)
+                  True, m, b if 45 deg angle # y = mx + b
                   False, 0, 0
     '''
     x1,y1,x2,y2 = line
@@ -49,6 +52,9 @@ def check_for_diag_45(line):
         ## CASE not 45
         return False, 0, 0
     
+
+## PART 1  ##################################################
+
 
     
 ## Go through input, get highest x, highest y
@@ -74,6 +80,9 @@ maxy = max([max(i_ys) for i_ys in ys])
 cols = [str(x) for x in range(maxx+1)]
 df = pd.DataFrame(0,index=range(maxy+1),columns=cols) 
 
+## Go through line by line, update grid,
+##  and if lines pass condition,
+##  increment where lines cover the grid
 for line in linesss:
     ## Skip diagonal lines
     if check_for_diag(line):
@@ -105,23 +114,14 @@ for line in linesss:
             strx = str(x1)
             df.loc[row,strx] = df.loc[row,strx] + 1
 
-danger_count = 0
-for row in range(maxx+1): 
-    if any(df.loc[row,:] >= 2): 
-        print(f'Danger Will Robinson!!!') 
-        for colidx in range(maxy+1):
-            strcolidx = str(colidx)
-            if df.loc[row,strcolidx] >= 2: 
-                danger_count += 1 
-                 
-            strcolidx = str(colidx) 
-
+## Count any danger, spots where dataframe >= 2
+danger_count = (df >= 2).sum().sum()  
 print(f'Answer: {danger_count}')
 
 
 
 
-## PART 2
+## PART 2  ##################################################
 
 ## Go through input, get highest x, highest y
 xs = [] 
@@ -146,10 +146,12 @@ maxy = max([max(i_ys) for i_ys in ys])
 cols = [str(x) for x in range(maxx+1)]
 df = pd.DataFrame(0,index=range(maxy+1),columns=cols) 
 
+## Go through line by line, update grid,
+##  and if lines pass condition,
+##  increment where lines cover the grid
 for line in linesss:
     ## Determine if horizontal, vertical, 45 deg diagonal or none
     x1,y1,x2,y2 = line
-
     check_45 = check_for_diag_45(line)
     
     if (y1 == y2):
@@ -164,10 +166,9 @@ for line in linesss:
         ## CASE line is not valid, continue
         continue
 
-    ## is x1 or x2 bigger?
+    ## is x1 or x2 bigger? is y1 or y2 bigger?
     iminx = min(x1,x2)
     imaxx = max(x1,x2)
-    ## is y1 or y2 bigger?
     iminy = min(y1,y2)
     imaxy = max(y1,y2)
 
@@ -176,7 +177,6 @@ for line in linesss:
         for col in range(iminx,imaxx+1):
             strcol = str(col)
             df.loc[y1,strcol] = df.loc[y1,strcol] + 1
-        
     
     if state == 'vertical':
         ## Vertical, iterate over rows
@@ -199,15 +199,7 @@ for line in linesss:
                 row = b - col 
                 df.loc[row,strcol] = df.loc[row,strcol] + 1        
 
-danger_count = 0
-for row in range(maxx+1): 
-    if any(df.loc[row,:] >= 2): 
-        print(f'Danger Will Robinson!!!') 
-        for colidx in range(maxy+1):
-            strcolidx = str(colidx)
-            if df.loc[row,strcolidx] >= 2: 
-                danger_count += 1 
-                 
-            strcolidx = str(colidx) 
+## Build dataframe to use as grid
+danger_count = (df >= 2).sum().sum() 
 
 print(f'Answer: {danger_count}')
