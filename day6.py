@@ -73,7 +73,6 @@ for ifish in init:
     for i in range(spawned):
         born_day = i*(7)+ifish+1
         str_born_day = str(born_day)
-        new_fish_born_day.append(born_day)
         if str_born_day in nfish_dict:
             nfish_dict[str_born_day] += 1
             nfish_dict_total[str_born_day] += 1
@@ -84,6 +83,11 @@ for ifish in init:
     total_fish += spawned
 
 
+## Go through each iteration of new fish
+## Track new fish in nfish_dict
+## nfish_dict key = day new fish spawned
+## nfish_dict value = number of new fish spawned that day
+## Track newest round of fish in new_nfish_dict (which will be set to nfish_dict at end of while)
 
 stop_while = 0
 #counter = 30 ## for troubleshooting while loop
@@ -99,20 +103,22 @@ while (stop_while == 0):
         ifish = int(ifish_key)
 
         ## New fish will spawn 9 days after it spawned
-        ## Keep track of fish spawned
+        ## Keep track of fish spawned, handling first spawn differently
         first_spawn_day = ifish + 9
         spawned = []
         if first_spawn_day <= ndays:
-            ## CASE fish will spawn for ndays is over, need to include
+            ## CASE: fish will spawn before ndays is over, need to include and track
             spawned.append(first_spawn_day)
             
             ## After initial spawning, a fish will produce a new fish every 7 days
             spawned_after_first = int(np.floor((ndays - first_spawn_day) / 7))
             if spawned_after_first > 0:
+                ## CASE: fish will spawn more after first spawn, need to include and track
                 spawned.extend([i*(7)+first_spawn_day
                                 for i in range(1,spawned_after_first + 1)])
 
-            ## For each new fish, add to new_nfish_dict (this will become the next dictionary to iterate over
+            ## For each new fish, add to new_nfish_dict
+            ##  this will become the next dictionary to iterate over (the next nfish_dict)
             for born_day in spawned:
                 str_born_day = str(born_day)
                 if str_born_day in new_nfish_dict:
