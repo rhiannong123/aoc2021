@@ -81,37 +81,48 @@ num_paths = sum([1 for path in paths if path.split(',')[-1] == 'end'])
 print(f'Answer: {num_paths}')
 
 ## PART 2  ##################################################
-
-## Format input as df grid.            
-
+## Each line is a point to point direction (caves) on a map
+## Create dict of what caves are directly connected
+## key: one cave
+## value: list of all cave(s) that the dict.key is connected
 caves = {}
 
 for line in lines: 
-    path0,path1 = line.split('-') 
+    ## cave 1 to cave 2
+    path0,path1 = line.split('-')
+
+    ## if cave 1 not defined in caves yet, add it to dict
     if path0 not in caves: 
         caves[path0] = [path1] 
     else: 
         if path1 not in caves[path0]: 
-            caves[path0].append(path1) 
+            caves[path0].append(path1)
+
+    ## Define in caves the other way, not just 1 to 2, but 2 to 1
     if path1 not in caves: 
         caves[path1] = [path0] 
     else: 
         if path0 not in caves[path1]: 
             caves[path1].append(path0)  
-        
-
+                
+## initialize paths
+## cave_twice list of flags length of paths list
+##   cave_twice is -1 for bad or end paths, 1 if a small cave has been entered a second time,
+##   
 paths = [f'start,{i}' for i in caves['start']]
 cave_twice = [0 for i in caves['start']]
 
 stop = 0
 while stop == 0:
+    
     new_paths = []
     new_cave_twice = []
+    
     for icave_twice,path in zip(cave_twice,paths):
         if verbose:
             print(len(paths))
 
-        ## add to end of path.
+        ## Add to end of path.
         ## One small cave can be entered in twice, any other paths label as bad
         caves_in_path = path.split(',')
         last_cave_in_path = caves_in_path[-1]
@@ -123,20 +134,25 @@ while stop == 0:
         for cave in caves[last_cave_in_path]:
             if cave == 'start':
                 continue
+
+            ## CASE small cave found, check if valid
             if (cave.lower() in path.split(',')):
 
                 if icave_twice == 1:
-                    ## one _small cave visited twice already, now it's bad
+                    ## one small cave visited twice already, now it's a bad path
                     new_path = f'{path},{cave},bad'
                     new_paths.append(new_path)
                     new_cave_twice.append(-1)
                     continue
                 else:
+                    ## CASE first small cave to be visited twice,
+                    ## cave twice flag = 1 for this cave
                     new_path = f'{path},{cave}'
                     new_paths.append(new_path)
                     new_cave_twice.append(1)
                     continue
-                
+
+            ## CASE cave is a large cave, path valid, keep same cave twice flag
             new_path = f'{path},{cave}'
             new_paths.append(new_path)
             if icave_twice:
@@ -147,11 +163,11 @@ while stop == 0:
     paths = new_paths.copy()
     cave_twice = new_cave_twice.copy()
 
+    ## End while loop if each path ends with 'end' or 'bad'
     end_bad_paths = [path for path in paths if (path.split(',')[-1] == 'end') or (path.split(',')[-1] == 'bad')]
     if len(paths) == len(end_bad_paths):
         stop = 1
     
-    ## End while loop if each path ends with 'end'
 
 
 num_paths = sum([1 for path in paths if path.split(',')[-1] == 'end']) 
