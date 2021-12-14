@@ -15,10 +15,8 @@ verbose = False
 
 ## Functions ##################################################
 def fold_horiz(df,foldstr):
-    #foldstr = 'y=7'
     foldind = int(foldstr)
-    ## check if yy is a 'y'
-    
+
     topdf = df.loc[:foldind-1,:].copy()
     bottomdf = df.loc[foldind+1:,:].copy()
     bottomdf = bottomdf.iloc[::-1].reset_index(drop=True) 
@@ -26,9 +24,7 @@ def fold_horiz(df,foldstr):
     return topdf + bottomdf
 
 def fold_vert(df,foldstr):
-    #foldstr = 'x=5'
     foldind = int(foldstr)
-    ## check if yy is a 'y'
     
     leftdf = df.iloc[:,:foldind].copy()
     rightdf = df.iloc[:,foldind+1:].copy()
@@ -47,9 +43,12 @@ def fold_vert(df,foldstr):
 
 ## PART 1  ##################################################
 
+## Split input into dot positions and fold instructions
 dots = [line for line in lines if (line != '') and ('fold' not in line)] 
 folds = [line for line in lines if 'fold' in line]
 
+## create list of x,y positions to put into dataframe
+## dataframe will have xmax+1 columns, ymax+1 rows
 to_df = []
 ymax = 0
 xmax = 0
@@ -68,6 +67,7 @@ df = pd.DataFrame(0,index=range(ymax+1),columns=range(xmax+1))
 for point in to_df:
     df.loc[point[0],point[1]] = 1
 
+## Only fold once
 for fold in folds[:1]:
     ifold = fold.split(' ')[-1]
 
@@ -78,15 +78,19 @@ for fold in folds[:1]:
     else:
         df = fold_vert(df,foldind)
 
+## Count number of non-zero entries in df
 summ = sum(df.astype(bool).sum(axis=0))
 
 print(f'Answer: {summ}')
 
 ## PART 2  ##################################################
 
+## Split input into dot positions and fold instructions
 dots = [line for line in lines if (line != '') and ('fold' not in line)] 
 folds = [line for line in lines if 'fold' in line]
 
+## create list of x,y positions to put into dataframe
+## dataframe will have xmax+1 columns, ymax+1 rows
 to_df = []
 ymax = 0
 xmax = 0
@@ -116,12 +120,10 @@ for fold in folds:
         df = fold_vert(df,foldind)
 
 ## Read output from df 
+## Print dataframe and read out 8 letter code :D
 newdf = df.copy()
 newdf[newdf == 0] = '.'
 print(newdf)
-
-#print(f'Answer: {summ}')
-        
 
 ## Stats  ######################################################
 
