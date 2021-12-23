@@ -370,24 +370,36 @@ while True:
 
 ### Go through operator packets backwards and determine values.
 opids.reverse()
+
+
+
 for opid in opids:
 
     numbers = []
+    
     if 'literals' in packets[opid]:
         lits = packets[opid]['literals'].copy()
     else:
         lits = []
+        
     if 'operators' in packets[opid]:
         ops = packets[opid]['operators'].copy()
     else:
         ops = []
+        
     for ptype in packets[opid]['ptype']:
         if ptype == 'l':
             numbers.append(lits.pop(0))
         else:
             iop = ops.pop(0)
             numbers.append(packets[iop]['value'])
-    
+
+    new_num = []
+    for inum in numbers:
+        new_num.append(float(inum))
+    numbers = new_num.copy()
+
+            
     action,is_boolean = check_operator_type(packets[opid]['typeid'])
     if is_boolean:
         if action == 'greater than':
